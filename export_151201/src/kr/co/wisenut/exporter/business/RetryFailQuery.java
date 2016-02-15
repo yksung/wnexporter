@@ -8,7 +8,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +15,6 @@ import java.util.StringTokenizer;
 
 import kr.co.wisenut.common.logger.Log2;
 import kr.co.wisenut.common.util.FileUtil;
-import kr.co.wisenut.common.util.StringUtil;
 import kr.co.wisenut.config.Config;
 import kr.co.wisenut.config.Constants;
 import kr.co.wisenut.db.DBJob;
