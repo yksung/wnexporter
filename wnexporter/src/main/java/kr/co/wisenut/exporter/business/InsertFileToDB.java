@@ -80,6 +80,7 @@ public class InsertFileToDB extends RunSQL{
 						HashMap<Integer, String> preparedStatementParameters = new HashMap<Integer, String>();
 						
 						// 같은 값을 여러 파라미터에 세팅할 수 있기 때문에 다음과 같이 작성함.
+						// 추후 개발 시 변수명을 key -> paremeterNumber 로 변경 (yksung@2016-09-26)
 						for(String key : StringUtil.split(Config.getUpdate_output_key_number(), ",")){						
 							// pk = docid(주문에 대한 key) + productNumberInThisDocid(한 주문에 포함된 상품의 seq) + i (hscode가 여러개일 경우 hscode seq)
 							preparedStatementParameters.put(Integer.parseInt(key), docid+"_"+productNumberInThisDocid+"_"+String.valueOf(i+1));
