@@ -29,7 +29,7 @@ public class InsertFileToDB extends RunSQL{
 		String resultCacheDirectoryPath = Config.getCachepath()+FileUtil.fileseperator+"done";
 		FileUtil.makeDir(resultCacheDirectoryPath);
 		
-		File[] resultCachesArr = FileUtil.getFileList(resultCacheDirectoryPath, ".csv_success");
+		File[] resultCachesArr = FileUtil.getFileList(resultCacheDirectoryPath, "_success");
 		if( resultCachesArr == null || resultCachesArr.length <= 0){
 			Log2.error("[info][InsertFileToDB] No cache files.");
 			return false;
@@ -54,7 +54,7 @@ public class InsertFileToDB extends RunSQL{
 				
 				int updateCount = 0;
 				while((line = reader.readLine()) != null){
-					String[] data = line.split("[|]");
+					String[] data = line.split("[|]", -1); // 공백도 값으로 간주하고 필드에 포함
 					
 					// 성유경@151015 : 마지막 컬럼의 hscode는 없는 경우도 있기 때문에 길이가 6보다 작을 수 있다.
 					if(data.length < 5){
@@ -62,11 +62,16 @@ public class InsertFileToDB extends RunSQL{
 					}
 					
 					// data[0] : success/fail flag
-					String docid = data[1];
-					String price = data[2];
-					String country = data[3];
-					String parsedGoodsName = data[4];
-					String hscodes = (data.length==6)? data[5]:" ";
+					String docid = data[Constants.KEY_COL_NUM];
+					String price = data[Constants.PRICE_COL_NUM];
+					String country = data[Constants.COUNTRY_COL_NUM];
+					String parsedGoodsName = data[Constants.GOODS_COL_NUM];
+					String companyCode = data[Constants.COMPANY_COL_NUM];
+					String dealSep = data[Constants.DEAL_COL_NUM];
+					String useSep = data[Constants.USE_COL_NUM];
+					String allowCode = data[Constants.ALLOW_COL_NUM];
+					// HS CODE가 추천되었으면 적고, 없으면 빈값을 넣음.
+					String hscodes = (data.length==7)? data[5]:" ";
 					
 					// 현재 docid와 이전 docid가 같으면 같은 주문임.
 					if( prevDocid.equals(docid) ){
@@ -96,6 +101,18 @@ public class InsertFileToDB extends RunSQL{
 						}
 						for(String key : StringUtil.split(Config.getUpdate_goodsname_number(), ",")){
 							preparedStatementParameters.put(Integer.parseInt(key), parsedGoodsName);
+						}
+						for(String key : StringUtil.split(Config.getUpdate_company_number(), ",")){
+							preparedStatementParameters.put(Integer.parseInt(key), companyCode);
+						}
+						for(String key : StringUtil.split(Config.getUpdate_deal_number(), ",")){
+							preparedStatementParameters.put(Integer.parseInt(key), dealSep);
+						}
+						for(String key : StringUtil.split(Config.getUpdate_use_number(), ",")){
+							preparedStatementParameters.put(Integer.parseInt(key), useSep);
+						}
+						for(String key : StringUtil.split(Config.getUpdate_allow_number(), ",")){
+							preparedStatementParameters.put(Integer.parseInt(key), allowCode);
 						}
 						for(String key : StringUtil.split(Config.getUpdate_hscode_seq_number(), ",")){
 							preparedStatementParameters.put(Integer.parseInt(key), String.valueOf(i+1));
@@ -146,17 +163,17 @@ public class InsertFileToDB extends RunSQL{
 			
 			return status;
 		}catch (IOException o) {
-			Log2.error("[error] [Run] [InsertFileToDB][IOException] " + Config.getCachepath() + " > " + o.getMessage());
+			Log2.error("[error] [Run] [InsertFileToDB][IOException] " + Config.getCachepath() + " > " + StringUtil.printStackTrace(o));
 			return false;
 		}catch (Exception e) {
-			Log2.error("[error] [Run] [InsertFileToDB][Exception] : " + e.getMessage());
+			Log2.error("[error] [Run] [InsertFileToDB][Exception] : " + StringUtil.printStackTrace(e));
 			return false;
 		}finally{
 			try {
 				releaseRS();
 				releaseDB();
 			} catch (Exception e2) {
-				// TODO: handle exception
+				Log2.error("[error] [Run] [InsertFileToDB][Exception] : " + StringUtil.printStackTrace(e2));
 			}
 		}
 	}

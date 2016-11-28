@@ -17,7 +17,14 @@ public class Config {
     private static String select_price_name;
     private static int select_company_num;
     private static String select_company_name;
+    private static int select_deal_num;
+    private static String select_deal_name;
+    private static int select_use_num;
+    private static String select_use_name;
+    private static int select_allow_num;
+    private static String select_allow_name;
     private static String select_query;
+    private static String select_failquery;
 
     private static String search_ip;
     private static int search_port;
@@ -37,6 +44,10 @@ public class Config {
 	private static String update_price_number;
 	private static String update_country_number;
     private static String update_goodsname_number;
+    private static String update_company_number;
+    private static String update_deal_number;
+    private static String update_use_number;
+    private static String update_allow_number;
     private static String update_hscode_seq_number;
     private static String update_hscode_val_number;
     private static String update_query;
@@ -122,11 +133,56 @@ public class Config {
 	public static void setSelect_company_name(String select_company_name) {
 		Config.select_company_name = select_company_name;
 	}
+
+	
+	public static int getSelect_deal_num() {
+		return select_deal_num;
+	}
+	public static void setSelect_deal_num(int select_deal_num) {
+		Config.select_deal_num = select_deal_num;
+	}
+	public static int getSelect_use_num() {
+		return select_use_num;
+	}
+	public static void setSelect_use_num(int select_use_num) {
+		Config.select_use_num = select_use_num;
+	}
+	public static String getSelect_deal_name() {
+		return select_deal_name;
+	}
+	public static void setSelect_deal_name(String select_deal_name) {
+		Config.select_deal_name = select_deal_name;
+	}
+	
+	public static String getSelect_use_name() {
+		return select_use_name;
+	}
+	public static void setSelect_use_name(String select_use_name) {
+		Config.select_use_name = select_use_name;
+	}
+	public static int getSelect_allow_num() {
+		return select_allow_num;
+	}
+	public static void setSelect_allow_num(int select_allow_num) {
+		Config.select_allow_num = select_allow_num;
+	}
+	public static String getSelect_allow_name() {
+		return select_allow_name;
+	}
+	public static void setSelect_allow_name(String select_allow_name) {
+		Config.select_allow_name = select_allow_name;
+	}
 	public static String getSelect_query() {
 		return select_query;
 	}
 	public static void setSelect_query(String select_query) {
 		Config.select_query = select_query;
+	}
+	public static String getSelect_failquery() {
+		return select_failquery;
+	}
+	public static void setSelect_failquery(String select_failquery) {
+		Config.select_failquery = select_failquery;
 	}
 	public static String getSearch_ip() {
 		return search_ip;
@@ -223,6 +279,30 @@ public class Config {
 	}
 	public static void setUpdate_goodsname_number(String update_goodsname_number) {
 		Config.update_goodsname_number = update_goodsname_number;
+	}
+	public static String getUpdate_company_number() {
+		return update_company_number;
+	}
+	public static void setUpdate_company_number(String update_company_number) {
+		Config.update_company_number = update_company_number;
+	}
+	public static String getUpdate_deal_number() {
+		return update_deal_number;
+	}
+	public static void setUpdate_deal_number(String update_deal_number) {
+		Config.update_deal_number = update_deal_number;
+	}
+	public static String getUpdate_use_number() {
+		return update_use_number;
+	}
+	public static void setUpdate_use_number(String update_use_number) {
+		Config.update_use_number = update_use_number;
+	}
+	public static String getUpdate_allow_number() {
+		return update_allow_number;
+	}
+	public static void setUpdate_allow_number(String update_allow_number) {
+		Config.update_allow_number = update_allow_number;
 	}
 	public static String getUpdate_hscode_seq_number() {
 		return update_hscode_seq_number;

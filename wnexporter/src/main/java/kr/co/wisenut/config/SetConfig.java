@@ -27,7 +27,16 @@ public class SetConfig {
         Config.setSelect_price_name(ext.getSelectPriceName());
         Config.setSelect_country_num(ext.getSelectCountryNum());
         Config.setSelect_country_name(ext.getSelectCountryName());
+        Config.setSelect_company_num(ext.getSelectCompanyNum());
+        Config.setSelect_company_name(ext.getSelectCompanyName());
+        Config.setSelect_deal_num(ext.getSelectDealNum());
+        Config.setSelect_deal_name(ext.getSelectDealName());
+        Config.setSelect_use_num(ext.getSelectUseNum());
+        Config.setSelect_use_name(ext.getSelectUseName());
+        Config.setSelect_allow_num(ext.getSelectAllowNum());
+        Config.setSelect_allow_name(ext.getSelectAllowName());
         Config.setSelect_query(ext.getSelectQuery());
+        Config.setSelect_failquery(ext.getSelectFailQuery());
         
         Config.setSearch_ip(ext.getSearchIp());
         Config.setSearch_port( StringUtil.parseInt(ext.getSearchPort(), 0));
@@ -40,6 +49,10 @@ public class SetConfig {
         Config.setUpdate_price_number(ext.getUpdatePriceColumn());
         Config.setUpdate_country_number(ext.getUpdateCountryColumn());
         Config.setUpdate_goodsname_number(ext.getUpdateGoodsnameColumn());
+        Config.setUpdate_company_number(ext.getUpdateCompanyColumn());
+        Config.setUpdate_deal_number(ext.getUpdateDealColumn());
+        Config.setUpdate_use_number(ext.getUpdateUseColumn());
+        Config.setUpdate_allow_number(ext.getUpdateAllowColumn());
         Config.setUpdate_hscode_seq_number(ext.getUpdateHscodeSeqColumn());
         Config.setUpdate_hscode_val_number(ext.getUpdateHscodeValColumn());
         Config.setUpdate_query(ext.getUpdateQuery());

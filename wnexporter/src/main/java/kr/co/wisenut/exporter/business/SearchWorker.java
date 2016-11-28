@@ -8,6 +8,7 @@ import java.util.HashMap;
 
 import QueryAPI453.Search;
 import kr.co.wisenut.common.logger.Log2;
+import kr.co.wisenut.common.util.StringUtil;
 import kr.co.wisenut.config.Config;
 import kr.co.wisenut.config.Constants;
 import kr.co.wisenut.config.RunTimeArgs;
@@ -94,8 +95,6 @@ public class SearchWorker {
         StringBuffer resultBuffer = new StringBuffer();
         
         String docid = inputData[Constants.KEY_COL_NUM-1];
-        String price = inputData[Constants.PRICE_COL_NUM-1];
-        String country = inputData[Constants.COUNTRY_COL_NUM-1];
         String goods = query; // 쪼개져서 들어온 한 레코드의 상품 일부
         
         StringBuffer sb = new StringBuffer();
@@ -116,11 +115,28 @@ public class SearchWorker {
         // 검색에 성공하면 (0건인 것도 포함)
         if(status){
         	resultBuffer.append("S").append("|");
-        	resultBuffer.append(docid).append("|");
-            resultBuffer.append(price).append("|");
-            resultBuffer.append(country).append("|");
-            resultBuffer.append(goods).append("|");
-            resultBuffer.append(sb.toString().replaceAll(",$", ""));
+        	// config에 설정된 컬럼 숫자 순서대로 cache 파일에 입력.
+        	for(int idx=0; idx<inputData.length; idx++){
+        		if(idx == Constants.KEY_COL_NUM-1){
+        			resultBuffer.append(inputData[idx]).append("|");
+        		}else if(idx == Constants.PRICE_COL_NUM-1){
+        			resultBuffer.append(inputData[idx]).append("|");
+        		}else if(idx == Constants.COUNTRY_COL_NUM-1){
+        			resultBuffer.append(inputData[idx]).append("|");
+        		}else if(idx == Constants.COMPANY_COL_NUM-1){
+        			resultBuffer.append(inputData[idx]).append("|");
+        		}else if(idx == Constants.GOODS_COL_NUM-1){
+        			resultBuffer.append(goods).append("|");
+        		}else if(idx == Constants.DEAL_COL_NUM-1){
+        			resultBuffer.append(inputData[idx]).append("|");
+        		}else if(idx == Constants.USE_COL_NUM-1){
+        			resultBuffer.append(inputData[idx]).append("|");
+        		}else if(idx == Constants.ALLOW_COL_NUM-1){
+        			resultBuffer.append(inputData[idx]).append("|");
+        		}
+        	}
+        	// 마지막으로 추천 받은  HS CODE를 붙임. 
+        	resultBuffer.append(sb.toString().replaceAll(",$", ""));
         }
         // 검색기 오류 등의 이유로 검색이 안된 경우
         else{
@@ -148,7 +164,7 @@ public class SearchWorker {
 			listReader.close();
 			
 		}catch(IOException ioe){
-			ioe.printStackTrace();
+			Log2.error("[SearchWorker][IOException] " + StringUtil.printStackTrace(ioe) );
 		}		
 		
 		return excludedList;

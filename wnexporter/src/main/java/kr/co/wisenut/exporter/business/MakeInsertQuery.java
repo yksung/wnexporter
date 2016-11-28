@@ -134,17 +134,21 @@ public class MakeInsertQuery extends RunSQL{
 						continue;
 					}
 					
-					String[] data = line.split("[|]");
-					// 필수로 필요한 정보(제출일자, 가격, 국가, 상품명) 4가지만 있으면 파싱하는 걸로.
-					if(data.length < 4){
+					String[] data = line.split("[|]", -1);
+					// 2016-10-17 성유경 : 특송업체부호 추가
+					// 2016-11-25 성유경 : 거래유형코드,용도코드 추가.
+					// 필수로 필요한 정보(제출일자, 가격, 국가, 상품명, 특송업체부호, 거래유형코드, 용도코드) 7가지만 있으면 파싱하는 걸로.
+					if(data.length < 7){
 						continue;
 					}
 	
 					String inputSearchWords = data[Constants.GOODS_COL_NUM-1];
-					String comp = "";// 아직은 회사코드를 받지 못한 상태이므로 그냥 else로 처리. 
+					String comp = data[Constants.COMPANY_COL_NUM-1];// 아직은 회사코드를 받지 못한 상태이므로 그냥 else로 처리. 
 					String sep = "";
-					if(regx.get(comp) == null || regx.get(comp).trim().equals("")){
+					if(regx.get(comp) == null ){
 						sep = regx.get("else");
+					}else{
+						sep = regx.get(comp);
 					}
 					
 					String[] searchWordsArr;
@@ -156,24 +160,24 @@ public class MakeInsertQuery extends RunSQL{
 					// 성유경@20151111 : config에서 설정하고 받아올 수 있도록 변경.
 					boolean isTong = Config.getNo_separator().equalsIgnoreCase("y") ? true:false;
 					
-					if(isTong){
+					if( isTong || "".equals(sep.trim()) ){ // 구분자를 사용안하거나, 구분자가 빈 문자열인 경우는 단품으로 간주.
 						searchWordsArr = new String[]{inputSearchWords};
 					}else{
 						searchWordsArr = inputSearchWords.split(sep);
 					}
 					
 					int count=0;
-					for(String searchWord : searchWordsArr){
+					for(int i=0; i<searchWordsArr.length; i++){
 						//송은우 임시 추가 : 지난 회의때 나왔던 제외 처리
 						//1. 빈칸일때 검색 안함
 						//2. 3글자 이하일 경우 검색 안함
 						//3. 숫자만 있을 경우 검색 안함
-						if(searchWord == null){
+						if(searchWordsArr[i] == null){
 							continue;
 						}
 						
 						// 성유경@20151111 : 숫자, 단위 등을 모두 제거한 결과물 중에서 세글자, 네글자, 공백인지를 판단하는 것으로 변경.
-						String tmpWord = getTunedQuery(searchWord.trim()).trim();
+						String tmpWord = getTunedQuery(searchWordsArr[i].trim()).trim();
 						
 						if(tmpWord.equals("")){//빈값일 경우 검색 pass
 							continue;
@@ -192,8 +196,8 @@ public class MakeInsertQuery extends RunSQL{
 						if(tmpWord.matches("[0-9]+")){//숫자만 있을 경우 pass
 							continue;
 						}
-						
 						String result = search.getRecommends(data, tmpWord);//검색해서 코드 리스트를 가져온다.
+						
 						/*********************************************************************************
 						 * 검색 결과 파일에 기록.
 						 *********************************************************************************/
@@ -205,9 +209,11 @@ public class MakeInsertQuery extends RunSQL{
 								count = 0;
 							}
 						}else{ // 검색 실패. 결과가 없는게 아니고 아예 검색 수행을 못함. 검색기 오류 등으로.
-							failedQueryWriter.write(result);
+							failedQueryWriter.write(line);
 							failedQueryWriter.newLine();
 							failedQueryWriter.flush();
+							
+							break; // 같은 목록통관상 남은 미분류 항목이 있더라도 다음 목록통관으로 건너뜀.
 						}
 					}
 					

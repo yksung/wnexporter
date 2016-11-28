@@ -321,6 +321,145 @@ public class GetExtConfig extends XmlUtil {
 	      return tmp;
 	  }
 	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public int getSelectDealNum() throws ConfigException {
+		  int tmp=-1;
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Select");
+
+	      try {
+	    	  Element child = ((Element)lst.get(0)).getChild("deal-column");
+	    	  Element grandchild = child.getChild("no");
+	    	  tmp = Integer.valueOf(grandchild.getText());
+	      } catch (NumberFormatException e) {
+	          Log2.error("[Text of <Select> - <deal-column> - <no>  should be a number type.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getSelectDealName() throws ConfigException {
+		  String tmp;
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Select");
+	      
+	      try {
+	    	  Element child = ((Element)lst.get(0)).getChild("deal-column");
+	    	  Element grandchild = child.getChild("name");
+	    	  tmp = grandchild.getText();
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Select> - <deal-column> - <name> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Select> - <deal-column> - <name> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public int getSelectUseNum() throws ConfigException {
+		  int tmp=-1;
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Select");
+
+	      try {
+	    	  Element child = ((Element)lst.get(0)).getChild("use-column");
+	    	  Element grandchild = child.getChild("no");
+	    	  tmp = Integer.valueOf(grandchild.getText());
+	      } catch (NumberFormatException e) {
+	          Log2.error("[Text of <Select> - <use-column> - <no>  should be a number type.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getSelectUseName() throws ConfigException {
+		  String tmp;
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Select");
+	      
+	      try {
+	    	  Element child = ((Element)lst.get(0)).getChild("use-column");
+	    	  Element grandchild = child.getChild("name");
+	    	  tmp = grandchild.getText();
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Select> - <use-column> - <name> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Select> - <use-column> - <name> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public int getSelectAllowNum() throws ConfigException {
+		  int tmp=-1;
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Select");
+
+	      try {
+	    	  Element child = ((Element)lst.get(0)).getChild("allow-column");
+	    	  Element grandchild = child.getChild("no");
+	    	  tmp = Integer.valueOf(grandchild.getText());
+	      } catch (NumberFormatException e) {
+	          Log2.error("[Text of <Select> - <allow-column> - <no>  should be a number type.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getSelectAllowName() throws ConfigException {
+		  String tmp;
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Select");
+	      
+	      try {
+	    	  Element child = ((Element)lst.get(0)).getChild("allow-column");
+	    	  Element grandchild = child.getChild("name");
+	    	  tmp = grandchild.getText();
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Select> - <allow-column> - <name> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Select> - <allow-column> - <name> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  
 	  
 	  /**
 	   *
@@ -342,6 +481,31 @@ public class GetExtConfig extends XmlUtil {
 	          }
 	      } catch (ConfigException e) {
 	          Log2.error("[Missing <Select> - <query> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getSelectFailQuery() throws ConfigException {
+	      String tmp ;
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Select");
+	      Element elmnt;
+	      
+	      try {
+	          elmnt = this.getElementListChild(lst, "Select");
+	          tmp = elmnt.getChildText("failquery");
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Select> - <failquery> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Select> - <failquery> setting in configuration file.]");
 	          throw new ConfigException("Could not parse Directory Config.");
 	      }
 	      return tmp;
@@ -742,6 +906,107 @@ public class GetExtConfig extends XmlUtil {
 	      }
 	      return tmp;
 	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getUpdateCompanyColumn() throws ConfigException {
+		  String tmp ;
+			
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Update");
+	      Element elmnt;
+	      
+	      try {
+	          elmnt = this.getElementListChild(lst, "Update");
+	          tmp = elmnt.getChildText("company-column");
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Update> - <company-column> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Update> - <company-column> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getUpdateDealColumn() throws ConfigException {
+		  String tmp ;
+			
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Update");
+	      Element elmnt;
+	      
+	      try {
+	          elmnt = this.getElementListChild(lst, "Update");
+	          tmp = elmnt.getChildText("deal-column");
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Update> - <deal-column> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Update> - <deal-column> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getUpdateUseColumn() throws ConfigException {
+		  String tmp ;
+			
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Update");
+	      Element elmnt;
+	      
+	      try {
+	          elmnt = this.getElementListChild(lst, "Update");
+	          tmp = elmnt.getChildText("use-column");
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Update> - <use-column> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Update> - <use-column> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getUpdateAllowColumn() throws ConfigException {
+		  String tmp ;
+			
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Update");
+	      Element elmnt;
+	      
+	      try {
+	          elmnt = this.getElementListChild(lst, "Update");
+	          tmp = elmnt.getChildText("allow-column");
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Update> - <allow-column> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Update> - <allow-column> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
 	  
 	  /**
 	   *

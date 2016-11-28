@@ -65,6 +65,10 @@ public class Exporter {
             	Log2.debug("[config infomation] Select-goods-column : " + Config.getSelect_goods_num() + " / " + Config.getSelect_goods_name());
             	Log2.debug("[config infomation] Select-price-column : " + Config.getSelect_price_num() + " / " + Config.getSelect_price_name());
             	Log2.debug("[config infomation] Select-country-column : " + Config.getSelect_country_num() + " / " + Config.getSelect_country_name());
+            	Log2.debug("[config infomation] Select-company-column : " + Config.getSelect_company_num() + " / " + Config.getSelect_company_name());
+            	Log2.debug("[config infomation] Select-deal-column : " + Config.getSelect_deal_num() + " / " + Config.getSelect_deal_name());
+            	Log2.debug("[config infomation] Select-use-column : " + Config.getSelect_use_num() + " / " + Config.getSelect_use_name());
+            	Log2.debug("[config infomation] Select-allow-column : " + Config.getSelect_allow_num() + " / " + Config.getSelect_allow_name());
             	Log2.debug("[config infomation] Select-query : " + Config.getSelect_query());
             	
             	Log2.debug("[config infomation] Search-ip : " + Config.getSearch_ip());

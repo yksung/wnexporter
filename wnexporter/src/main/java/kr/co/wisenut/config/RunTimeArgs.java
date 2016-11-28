@@ -16,7 +16,7 @@ package kr.co.wisenut.config;
  * @version 1.0.5<br>
  */
 public class RunTimeArgs {
-	private static String exportid = "";
+	private static String exportid = ""; // necessary for creating identical process id and cache
     private static String conf = "";
     private static String logdir = "";
     private static String piddir = "";

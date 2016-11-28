@@ -12,6 +12,7 @@ import kr.co.wisenut.common.util.FileUtil;
 import kr.co.wisenut.common.util.StringUtil;
 import kr.co.wisenut.config.Config;
 import kr.co.wisenut.config.Constants;
+import kr.co.wisenut.config.RunTimeArgs;
 import kr.co.wisenut.db.DBJob;
 import kr.co.wisenut.db.RunSQL;
 import kr.co.wisenut.exporter.Run;
@@ -25,7 +26,8 @@ public class SelectToListFile extends RunSQL{
 	
 	public boolean work() throws DBFactoryException{
 		String query = Config.getSelect_query();
-		String cache_path = Config.getCachepath();
+		//  성유경@20161128 : cache디렉토리만 받고 하부 디렉토리는 export id를 이용해 만드는것으로 변경
+		String cache_path = Config.getCachepath()+FileUtil.fileseperator+RunTimeArgs.getExportid();
 		
 		FileUtil.makeDir(cache_path);
 		
@@ -48,7 +50,8 @@ public class SelectToListFile extends RunSQL{
 			
 			//한꺼번에 객체에 내려받지 않고 한 로우씩 받아서 처리하자
 			Log2.out("[info] [Run] [SelectToListFile] start getting data from table");
-			m_dbjob.setResultSet(query);
+			m_dbjob.setResultSet(query, RunTimeArgs.getExportid(), 0);
+			
 			while (!m_dbjob.isError() && m_dbjob.next()) {
 				HashMap<String, String> row =  m_dbjob.getStringAsMap();
 				
@@ -97,13 +100,13 @@ public class SelectToListFile extends RunSQL{
 			
 			return status;
 		}catch (IOException o) {
-			Log2.error("[error] [Run] [SelectToListFile][IOException] " + Config.getCachepath() + " > " + o.getMessage());
+			Log2.error("[error] [Run] [SelectToListFile][IOException] " + Config.getCachepath() + " > " + StringUtil.printStackTrace(o));
 			return false;
 		}catch(DBFactoryException e){
-			Log2.error("[error] [Run] [SelectToListFile][DBFactoryException]" + e.getMessage());
+			Log2.error("[error] [Run] [SelectToListFile][DBFactoryException]" + StringUtil.printStackTrace(e));
 			return false;
 		}catch (Exception e) {
-			Log2.error("[error] [Run] [SelectToListFile][Exception] : " + e.getMessage());
+			Log2.error("[error] [Run] [SelectToListFile][Exception] : " + StringUtil.printStackTrace(e));
 			return false;
 		}finally{
 			try {
@@ -111,7 +114,7 @@ public class SelectToListFile extends RunSQL{
 				releaseRS();
 				releaseDB();
 			} catch (Exception e2) {
-				// TODO: handle exception
+				Log2.error("[error] [Run] [SelectToListFile][Exception] : " + StringUtil.printStackTrace(e2));
 			}
 		}
 	}
