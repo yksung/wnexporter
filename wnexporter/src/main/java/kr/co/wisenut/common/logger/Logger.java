@@ -31,15 +31,16 @@ public class Logger implements ILogger {
     protected int verbosity = INFO;
     private String m_module = "exporter-";
     
-    public Logger(String logBase, boolean debug){
-        this(logBase, debug, 3, false );
+    public Logger(String logBase, String sourceName, boolean debug){
+        this(logBase, sourceName, debug, 3, false );
     }
 
-    public Logger(String logBase, boolean debug, int verbosity){
-        this(logBase, debug, verbosity, false );
+    public Logger(String logBase, String sourceName, boolean debug, int verbosity){
+        this(logBase, sourceName, debug, verbosity, false );
     }
 
-    public Logger(String logBase,  boolean debug, int verbosity, boolean verbose) {
+    public Logger(String logBase, String sourceName, boolean debug, int verbosity, boolean verbose) {
+    	setModuleName(sourceName);
         setLogBase(logBase);
         setDebug(debug);
         setPrintWriter();
@@ -49,6 +50,10 @@ public class Logger implements ILogger {
     
     private void setLogBase(String logBase) {
         m_logBase = logBase;
+    }
+    
+    private void setModuleName(String name){
+    	m_module += name;
     }
     
     private void setDebug(boolean debug) {

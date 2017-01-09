@@ -26,7 +26,7 @@ public class InsertFileToDB extends RunSQL{
 	
 	public boolean work() throws DBFactoryException{
 
-		String resultCacheDirectoryPath = Config.getCachepath()+FileUtil.fileseperator+"done";
+		String resultCacheDirectoryPath = Config.getCachepath()+FileUtil.fileseperator+RunTimeArgs.getExportid()+FileUtil.fileseperator+"done";
 		FileUtil.makeDir(resultCacheDirectoryPath);
 		
 		File[] resultCachesArr = FileUtil.getFileList(resultCacheDirectoryPath, "_success");
@@ -71,7 +71,7 @@ public class InsertFileToDB extends RunSQL{
 					String useSep = data[Constants.USE_COL_NUM];
 					String allowCode = data[Constants.ALLOW_COL_NUM];
 					// HS CODE가 추천되었으면 적고, 없으면 빈값을 넣음.
-					String hscodes = (data.length==7)? data[5]:" ";
+					String hscodes = (data.length==11)? data[9]:" ";
 					
 					// 현재 docid와 이전 docid가 같으면 같은 주문임.
 					if( prevDocid.equals(docid) ){
@@ -133,7 +133,7 @@ public class InsertFileToDB extends RunSQL{
 						if( m_dbjob.executeBatch(Config.getUpdate_query(), parameters) == 0){
 							Log2.error("[InsertFileToDb] executeBatch failed.");
 						}else{
-							releaseRS();
+							//releaseRS();
 							if(RunTimeArgs.isDebug()) Log2.debug("[InsertFileToDb] " + updateCount +" rows are updated.");
 						}
 						parameters.clear(); // List를 비움.

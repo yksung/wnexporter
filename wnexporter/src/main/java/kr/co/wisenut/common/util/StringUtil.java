@@ -11,6 +11,7 @@ import java.util.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.swing.plaf.SliderUI;
 
@@ -26,7 +27,7 @@ import javax.swing.plaf.SliderUI;
  * @version 3.8,1. 2009/03/11 Bridge Release
  *
  */
-public class StringUtil {
+public class StringUtil extends StringUtils{
     public final static String newLine = System.getProperty("line.separator");
     private static long SERIAL = -1;
 
@@ -448,6 +449,23 @@ public class StringUtil {
         }
         return taRetVal ;
     }
+	
+	public static String[] splitUsingIndexOf(String splittee, String splitter){
+		ArrayList<String> list = new ArrayList<String>();
+		splittee += " "+splitter;
+		
+        int pos = 0, end;
+        while ((end = splittee.indexOf(splitter, pos)) >= 0) {
+            list.add(splittee.substring(pos, end).trim());
+            pos = end + 1;
+        }
+        String[] result = new String[list.size()];
+        for(int i=0; i<result.length; i++){
+        	result[i] = list.get(i);
+        }
+        
+        return result;
+	}
 	
 	public static String[] splitWithEmptyValue(String splittee, String splitChar){
 		if(splittee==null || splittee.equals("")){

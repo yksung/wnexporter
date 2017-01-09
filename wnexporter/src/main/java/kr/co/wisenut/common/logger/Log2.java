@@ -22,9 +22,9 @@ public class Log2 {
     /**
      * logpath, idDebug(디버그여부)
      */
-	public static void setLogger(String logBase, boolean debug)  {
+	public static void setLogger(String logBase, String sourceName, boolean debug)  {
 		if(logger == null) {
-			logger = new Logger(logBase, debug);
+			logger = new Logger(logBase, sourceName, debug);
 		}
 	}
 	

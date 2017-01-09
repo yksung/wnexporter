@@ -1,5 +1,6 @@
 package kr.co.wisenut.config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Config {
@@ -30,13 +31,14 @@ public class Config {
     private static int search_port;
 	private static int search_thread;
 	private static int search_timeout;
-    private static String index_field;
-    private static String class_field;
+	private static ArrayList<SF1Collection> search_collections;
     private static int page_count;
     private static int recom_count;
     private static String recom_option;
     private static String no_separator;
-    private static HashMap<String, String> goods_split_regxs;
+    private static String goods_split_regxs;
+    private static String defaultSplitter;
+    private static String excluded_word;
 
     private static int update_fetch_size;
     private static String update_output_key_number;
@@ -208,17 +210,12 @@ public class Config {
 	public static void setSearch_timeout(int search_timeout) {
 		Config.search_timeout = search_timeout;
 	}
-	public static String getIndex_field() {
-		return index_field;
+	public static ArrayList<SF1Collection> getSearch_collections() {
+		return search_collections;
 	}
-	public static void setIndex_field(String index_field) {
-		Config.index_field = index_field;
-	}
-	public static String getClass_field() {
-		return class_field;
-	}
-	public static void setClass_field(String class_field) {
-		Config.class_field = class_field;
+	public static void setSearch_collections(
+			ArrayList<SF1Collection> search_collections) {
+		Config.search_collections = search_collections;
 	}
 	public static int getPage_count() {
 		return page_count;
@@ -328,10 +325,22 @@ public class Config {
 	public static void setDataSource(HashMap dataSource) {
 		Config.dataSource = dataSource;
 	}
-	public static HashMap<String, String> getGoods_split_regxs() {
+	public static String getGoods_split_regxs() {
 		return goods_split_regxs;
 	}
-	public static void setGoods_split_regxs(HashMap<String, String> goods_split_regxs) {
+	public static void setGoods_split_regxs(String goods_split_regxs) {
 		Config.goods_split_regxs = goods_split_regxs;
+	}
+	public static String getDefaultSplitter() {
+		return defaultSplitter;
+	}
+	public static void setDefaultSplitter(String defaultSplitter) {
+		Config.defaultSplitter = defaultSplitter;
+	}
+	public static String getExcluded_word() {
+		return excluded_word;
+	}
+	public static void setExcluded_word(String excluded_word) {
+		Config.excluded_word = excluded_word;
 	}
 }

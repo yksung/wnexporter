@@ -6,7 +6,10 @@ package kr.co.wisenut.common.util;
 
 import java.io.*;
 
+import kr.co.wisenut.common.logger.Log2;
 import kr.co.wisenut.common.util.dynrun.DynRun;
+import kr.co.wisenut.common.util.io.IOUtil;
+import kr.co.wisenut.config.RunTimeArgs;
 
 /**
  *
@@ -28,7 +31,7 @@ public class PidUtil {
     private String DEF_PID_VAL_ERROR="-1";
     
     public PidUtil(String srcid, String piddir) {
-        m_srcid = srcid;
+        m_srcid = "exporter-"+srcid;
         piddir = piddir.trim();
         String baseDir = piddir;
         if( !piddir.endsWith(FileUtil.fileseperator) ){
@@ -210,5 +213,19 @@ public class PidUtil {
             throw new Exception( "Fail DynRun. Class:"+classNameString+", method:"+ methodNameString+", Message:"+e.getMessage());
         }
         return pid;
+    }
+    
+    public static void main(String[] args){
+    	PidUtil pidUtil = new PidUtil(RunTimeArgs.getExportid(), RunTimeArgs.getPiddir());
+		try {
+			if (pidUtil.existsPidFile()) {
+				Log2.error("[Exporter already running]" + StringUtil.newLine);
+				System.exit(-1);
+			}
+			
+			System.out.println("PID : " + pidUtil.getPID());
+		} catch (IOException e) {
+			Log2.error("[Make PID file fail " + "\n" + IOUtil.StackTraceToString(e) + "\n]");
+		}
     }
 }

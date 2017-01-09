@@ -42,6 +42,7 @@ public class SetConfig {
         Config.setSearch_port( StringUtil.parseInt(ext.getSearchPort(), 0));
         Config.setSearch_thread( StringUtil.parseInt(ext.getThread(), 0));
         Config.setSearch_timeout( StringUtil.parseInt(ext.getTimeout(), 0));
+        Config.setSearch_collections(ext.getSearchCollections());
         
         Config.setUpdate_fetch_size(ext.getUpdateFetchSize());        
         Config.setUpdate_order_key_number(ext.getUpdateOrderKeyColumn());
@@ -57,13 +58,13 @@ public class SetConfig {
         Config.setUpdate_hscode_val_number(ext.getUpdateHscodeValColumn());
         Config.setUpdate_query(ext.getUpdateQuery());
         
-        Config.setIndex_field(ext.getIndexField());
-        Config.setClass_field(ext.getClassField());
         Config.setPage_count(StringUtil.parseInt(ext.getPageCount(), 0));
         Config.setRecom_count(StringUtil.parseInt(ext.getRecomCount(), 0));
         Config.setRecom_option(ext.getRecomOpt());
         Config.setNo_separator(ext.getNoSeparator());
         Config.setGoods_split_regxs(ext.getGoodsSplitRegx());
+        Config.setDefaultSplitter(ext.getDefaultSplitter());
+        Config.setExcluded_word(ext.getExcludedWord());
         
         
         try {

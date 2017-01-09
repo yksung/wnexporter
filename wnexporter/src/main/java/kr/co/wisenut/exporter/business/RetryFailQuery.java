@@ -6,9 +6,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import kr.co.wisenut.common.Exception.DBFactoryException;
 import kr.co.wisenut.common.logger.Log2;
 import kr.co.wisenut.common.util.FileUtil;
 import kr.co.wisenut.common.util.StringUtil;
@@ -24,59 +26,35 @@ import kr.co.wisenut.db.RunSQL;
  */
 public class RetryFailQuery extends RunSQL{
 	private int totalResultCount = 0;
-	private HashMap<String ,Integer> excludeWord;
 	private SearchWorker search;
+	private HashMap<String,String> regxMap;
+	private HashMap<String,Integer> excludedWord;
 	
-	public RetryFailQuery(DBJob dbjob) {
+	@SuppressWarnings("unchecked")
+	public RetryFailQuery(DBJob dbjob) throws DBFactoryException {
 		super(dbjob);
+		
+		Log2.out("[info] [Run] [MakeInsertQuery] DB getConnection > " + Config.getDsn());
+		if(!getConnection()){
+			throw new DBFactoryException("Connection Fail");
+		}
 		
 		search = new SearchWorker();
 		
-		excludeWord = new HashMap<String, Integer>();
-		excludeWord.put("SET", 0);
-		excludeWord.put("FOR", 0);
-		excludeWord.put("ALL", 0);
-		excludeWord.put("CM", 0);
-		excludeWord.put("KG", 0);
-		excludeWord.put("ML", 0);
-		excludeWord.put("OZ", 0);
-		excludeWord.put("IN", 0);
-		excludeWord.put("BY", 0);
-		excludeWord.put("THE", 0);
-		excludeWord.put("EA", 0);
-		excludeWord.put("LB", 0);
-		excludeWord.put("INCHES", 0);
-		excludeWord.put("MAH", 0);
-		excludeWord.put("AND", 0);
-		excludeWord.put("NEW", 0);
-		excludeWord.put("COUNT", 0);
-		excludeWord.put("FOOT", 0);
-		excludeWord.put("INCH", 0);
-		excludeWord.put("ON", 0);
-		excludeWord.put("KHZ", 0);
-		excludeWord.put("HZ", 0);
-		excludeWord.put("PACK", 0);
-		excludeWord.put("PAC", 0);
-		excludeWord.put("PIECE", 0);
-		excludeWord.put("PCS", 0);
-		excludeWord.put("GB", 0);
-		excludeWord.put("SIZE", 0);		
-		excludeWord.put("NJ", 0);		
-		excludeWord.put("AR", 0);		
-		excludeWord.put("YD", 0);		
-		excludeWord.put("SPF", 0);		
-		excludeWord.put("TC", 0);		
-		excludeWord.put("PER", 0);		
-		excludeWord.put("GRAM", 0);		
-		excludeWord.put("BU", 0);		
-		excludeWord.put("PW", 0);		
-		excludeWord.put("CL", 0);		
-		excludeWord.put("OUNCE", 0);		
-		excludeWord.put("BN", 0);		
-		excludeWord.put("DC", 0);		
-		excludeWord.put("FL", 0);
-		excludeWord.put("WON", 0);
-		excludeWord.put("GM", 0);
+		// Config>Search>goods-split-regx의 SQL로 업체별 상품 구분자를 받아와 map에 저장.
+		try{
+			for(String[] regx : (ArrayList<String[]>)m_dbjob.getQueryRsData(Config.getGoods_split_regxs(), null)){
+				regxMap.put(regx[0], regx[1]); // regx[0] : 특송업체부호, regx[1] : 구분자 정규식
+			}
+			for(String[] word : (ArrayList<String[]>)m_dbjob.getQueryRsData(Config.getExcluded_word(), null)){
+				excludedWord.put(word[0], 0);
+			}
+		}catch(Exception e){
+			Log2.error(StringUtil.printStackTrace(e));
+		}finally{
+			releaseRS();
+			releaseDB();
+		}
 	}
 	
 	// 여기서는 기존에 success한 결과물들을 다시 읽으면서
@@ -97,9 +75,6 @@ public class RetryFailQuery extends RunSQL{
 		if(!cache_path.endsWith(FileUtil.fileseperator)){
 			cache_path = cache_path + FileUtil.fileseperator;
 		}
-		
-		HashMap<String, String> regx = Config.getGoods_split_regxs();
-		
 		
 		if(!recomOption.equals("rank")){
 			recomOption = "statistic";
@@ -156,10 +131,10 @@ public class RetryFailQuery extends RunSQL{
 					String inputSearchWords = data[Constants.GOODS_COL_NUM-1];
 					String comp = data[Constants.COMPANY_COL_NUM-1];// 아직은 회사코드를 받지 못한 상태이므로 그냥 else로 처리. 
 					String sep = "";
-					if(regx.get(comp) == null ){
-						sep = regx.get("else");
+					if(regxMap.get(comp) == null ){
+						sep = regxMap.get("else");
 					}else{
-						sep = regx.get(comp);
+						sep = regxMap.get(comp);
 					}
 					
 					String[] searchWordsArr;
@@ -294,7 +269,7 @@ public class RetryFailQuery extends RunSQL{
 			return false;
 		}
 		
-		if(excludeWord.containsKey(checkString.toUpperCase())){
+		if(excludedWord.containsKey(checkString.toUpperCase())){
 			return true;
 		}
 		

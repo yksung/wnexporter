@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import QueryAPI453.Search;
 import kr.co.wisenut.common.logger.Log2;
@@ -12,24 +15,19 @@ import kr.co.wisenut.common.util.StringUtil;
 import kr.co.wisenut.config.Config;
 import kr.co.wisenut.config.Constants;
 import kr.co.wisenut.config.RunTimeArgs;
+import kr.co.wisenut.config.SF1Collection;
 
 public class SearchWorker {
-	public SearchWorker(){
-	}
+	Calendar calendar;
+	SimpleDateFormat sdf;
 	
-	public String getRecommends(String[] inputData, String query){
-		boolean status = true;
-		
-		/*********************************************************************************
-		 * 검색 수행
-		 *********************************************************************************/
-		String[] collections = new String[] { "reference" };
-
-		String orQuery = query.replaceAll("[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\\s]", " ");
-		orQuery = orQuery.replaceAll("[\\s]+", "|");
-		
+	Search wnsearch;
+	
+	public SearchWorker(){
 		int ret = 0;
-		Search wnsearch = new Search();
+		sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+		wnsearch = new Search();
 		
 		ret = wnsearch.w3SetCodePage(Constants.CHARSET);
         if(RunTimeArgs.isDebug()) {
@@ -37,46 +35,60 @@ public class SearchWorker {
         }else{
         	ret = wnsearch.w3SetQueryLog(Constants.SET_QUERYLOG_OFF);
         }
-        ret = wnsearch.w3SetCommonQuery(orQuery);
         
-        // 우선은 세개 컬렉션 모두 동일한 document Field ==> code 하나만을 가진다고 가정.
-        String documentFields = Config.getClass_field();
-        
-        for(String col : collections){
-        	ret = wnsearch.w3AddCollection(col);
-			
-        	ret = wnsearch.w3SetQueryAnalyzer(col, Constants.USE_KMA_ON, Constants.IS_CASE_OFF);
-			
-        	ret = wnsearch.w3SetHighlight(col, Constants.HIGHLIGHT_ON, 5);
-	        
-        	ret = wnsearch.w3SetPageInfo(col, 0, Config.getPage_count());
-	        
-        	ret = wnsearch.w3SetDateRange(col, "1970/01/01", "2030/12/31");
-	        
-        	ret = wnsearch.w3AddSortField(col, "RANK", Constants.DESCENDING);
+        for(SF1Collection thisCollection : Config.getSearch_collections()){
+        	String[] searchFieldsArr;
+        	
+        	ret = wnsearch.w3AddCollection(thisCollection.getCollectionName());
+        	ret = wnsearch.w3SetQueryAnalyzer(thisCollection.getCollectionName(), Constants.USE_KMA_ON, Constants.IS_CASE_OFF);
+        	ret = wnsearch.w3SetHighlight(thisCollection.getCollectionName(), Constants.HIGHLIGHT_ON, 5);
+        	ret = wnsearch.w3SetPageInfo(thisCollection.getCollectionName(), 0, Config.getPage_count());
+        	ret = wnsearch.w3SetDateRange(thisCollection.getCollectionName(), "1970/01/01", "2030/12/31");
+        	ret = wnsearch.w3AddSortField(thisCollection.getCollectionName(), "RANK", Constants.DESCENDING);
 
-	        String[] searchFieldsArr = Config.getIndex_field().split(",");
-	        for( String sfield : searchFieldsArr){
-	        	ret = wnsearch.w3AddSearchField(col, sfield);
+        	searchFieldsArr = thisCollection.getSearchFields().split(",");
+	        for( String sfield : searchFieldsArr ){
+	        	ret = wnsearch.w3AddSearchField(thisCollection.getCollectionName(), sfield);
 	        }
 	        
-	        String[] documentFieldArr = documentFields.split(",");
-	        for( String dfield : documentFieldArr ){
-	        	ret = wnsearch.w3AddDocumentField(col, dfield);
+	        Iterator<String> documentFieldsIter = thisCollection.getDocumentFieldsMap().keySet().iterator();
+	        while(documentFieldsIter.hasNext()){      	
+	        	String dfieldKind = documentFieldsIter.next(); // 가져오려는 필드의 공통 명칭.
+	        	ret = wnsearch.w3AddDocumentField(thisCollection.getCollectionName(), thisCollection.getDocumentFieldsMap().get(dfieldKind)); // 실제 해당 컬렉션의 출력필드이름을 가져와 설정.
 	        }
 		}
-        
-        ret = wnsearch.w3ConnectServer(Config.getSearch_ip(), Config.getSearch_port(), Config.getSearch_timeout());
-        
-        ret = wnsearch.w3RecvResult(Constants.CONNECTION_CLOSE);
         
         if(ret != 0){
         	Log2.error("[search] error code : " + ret);
         	Log2.error("[search] error code : " + wnsearch.w3GetErrorInfo());
         	Log2.error("[search] error code : " + wnsearch.w3GetErrorInfo(ret));
-        	wnsearch.w3CloseServer();
+        	//wnsearch.w3CloseServer();
+        }
+	}
+	
+	public String getRecommends(String[] inputData, String query){
+		long stopWatchStart;
+		
+		boolean status = true;
+		int ret = 0;
+		
+		/*********************************************************************************
+		 * 검색 수행
+		 *********************************************************************************/
+		String orQuery = query.replaceAll("[^가-힣ㄱ-ㅎㅏ-ㅣa-zA-Z0-9\\s]", " ");
+		orQuery = orQuery.replaceAll("[\\s]+", "|");
+		
+		ret = wnsearch.w3SetCommonQuery(orQuery);
+		ret = wnsearch.w3ConnectServer(Config.getSearch_ip(), Config.getSearch_port(), Config.getSearch_timeout());
+        ret = wnsearch.w3RecvResult(Constants.CONNECTION_CLOSE);
+        if(ret != 0){
+        	Log2.error("[search] error code : " + ret);
+        	Log2.error("[search] error code : " + wnsearch.w3GetErrorInfo());
+        	Log2.error("[search] error code : " + wnsearch.w3GetErrorInfo(ret));
+        	//wnsearch.w3CloseServer();
         	status = false;
         }
+        
         
         /*********************************************************************************
 		 * 검색 결과 받아옴.
@@ -98,23 +110,41 @@ public class SearchWorker {
         String goods = query; // 쪼개져서 들어온 한 레코드의 상품 일부
         
         StringBuffer sb = new StringBuffer();
-        for(String col : collections){
-        	int count = wnsearch.w3GetResultCount(col);
-        	int i;
-        	for(i=0; i<count; i++){
+        for(SF1Collection thisCollection : Config.getSearch_collections()){
+        	
+        	int count = wnsearch.w3GetResultCount(thisCollection.getCollectionName());
+        	
+        	// count가 0이면 다음 컬렉션으로
+        	if(count == 0){
+        		continue;
+        	}
+        	
+        	
+        	for(int i=0; i<count; i++){
         		if(i==Config.getRecom_count()){
         			break;
         		}
-        		String recommended = wnsearch.w3GetField(col, "CODE", i);
+        		
+        		String recommendedHscode = wnsearch.w3GetField(thisCollection.getCollectionName(), thisCollection.getDocumentFieldsMap().get("HSCODE"), i);
+        		String alias = wnsearch.w3GetField(thisCollection.getCollectionName(), thisCollection.getDocumentFieldsMap().get("ALIAS"), i);
     			// 추천된 code 개수가 pageCount만큼이 되면 break
-    			sb.append(recommended);
+    			sb.append(recommendedHscode);
+    			sb.append("|").append(alias);
     			sb.append(",");
-    		}
+        	}
+        	
+        	
+        	// 이번 컬렉션에서  검색된 추천코드 갯수가 0보다 큰 경우 다음 컬렉션으로 진행하지 않고 중단.
+        	if(count > 0){
+        		break;
+        	}
         }
         
         // 검색에 성공하면 (0건인 것도 포함)
+        
         if(status){
-        	resultBuffer.append("S").append("|");
+        	calendar = Calendar.getInstance();
+        	resultBuffer.append("S"+"["+sdf.format(calendar.getTime()).toString()+"]").append("|");
         	// config에 설정된 컬럼 숫자 순서대로 cache 파일에 입력.
         	for(int idx=0; idx<inputData.length; idx++){
         		if(idx == Constants.KEY_COL_NUM-1){
@@ -144,7 +174,8 @@ public class SearchWorker {
         	resultBuffer.append(docid);
         }
         
-        wnsearch.w3CloseServer();
+        
+        //wnsearch.w3CloseServer();
         
 		return resultBuffer.toString();
 	}

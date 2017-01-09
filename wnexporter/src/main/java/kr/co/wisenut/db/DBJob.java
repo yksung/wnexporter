@@ -213,7 +213,9 @@ public class DBJob extends DBManager  {
     }
     
     public int executeBatch(String query, ArrayList<HashMap<Integer,String>> parameters){
-    	int[] batchResult;
+    	int[] batchResult = null;
+    	t_pstmt = null;
+    	
     	try {
     		conn.setAutoCommit(false);
 			t_pstmt = conn.prepareStatement(query);
@@ -231,9 +233,8 @@ public class DBJob extends DBManager  {
 
 			batchResult = t_pstmt.executeBatch();
 			t_pstmt.clearBatch();
-			commit(); 
-
-			return batchResult.length;
+			commit();
+			
 		} catch (SQLException e) {
 			Log2.error("[DBJob] [SQL Error Code :  "+e.getErrorCode()+"]");
 			Log2.error("[DBJob] [SQL Query : "+query+"]");
@@ -247,9 +248,20 @@ public class DBJob extends DBManager  {
 		} catch (Exception e) {
 			Log2.error("[DBJob] ["+e.getMessage()+"]");
 			Log2.error("[DBJob] " + StringUtil.printStackTrace(e) );
+		} finally{
+			try {
+				t_pstmt.close();
+			} catch (SQLException e) {
+				Log2.error("[DBJob] ["+e.getMessage()+"]");
+				Log2.error("[DBJob] " + StringUtil.printStackTrace(e) );
+			}
 		}
     	
-    	return 0;
+    	if(batchResult==null){
+    		return 0;
+    	}else{    		
+    		return batchResult.length;
+    	}
     }
     
     /**

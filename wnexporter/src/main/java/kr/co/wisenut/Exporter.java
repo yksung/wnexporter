@@ -5,6 +5,7 @@ import java.io.IOException;
 import kr.co.wisenut.msg.InfoMsg;
 import kr.co.wisenut.config.RunTimeArgs;
 import kr.co.wisenut.config.Config;
+import kr.co.wisenut.config.SF1Collection;
 import kr.co.wisenut.config.SetConfig;
 import kr.co.wisenut.common.Exception.ConfigException;
 import kr.co.wisenut.common.Exception.DBFactoryException;
@@ -42,7 +43,7 @@ public class Exporter {
         }
         
         //logpath, idDebug(디버그여부)
-        Log2.setLogger(RunTimeArgs.getLogdir(), RunTimeArgs.isDebug());
+        Log2.setLogger(RunTimeArgs.getLogdir(), RunTimeArgs.getExportid(), RunTimeArgs.isDebug());
         
         PidUtil pidUtil = null;
         
@@ -74,13 +75,14 @@ public class Exporter {
             	Log2.debug("[config infomation] Search-ip : " + Config.getSearch_ip());
             	Log2.debug("[config infomation] Search-port : " + Config.getSearch_port());
             	Log2.debug("[config infomation] Search-thread : " + Config.getSearch_thread());
-            	Log2.debug("[config infomation] Search-index-filde : " + Config.getIndex_field());
-            	Log2.debug("[config infomation] Search-class-field : " + Config.getClass_field());
+            	for(SF1Collection col : Config.getSearch_collections()){            		
+            		Log2.debug(String.format("[config infomation] Search-collection(%s) - Search Fields : %s", col.getCollectionName(), col.getSearchFields()));
+            	}
             	Log2.debug("[config infomation] Search-page-count : " + Config.getPage_count());
             	Log2.debug("[config infomation] Search-recommend-count : " + Config.getRecom_count());
             	Log2.debug("[config infomation] Search-recommend-option : " + Config.getRecom_option());
             	Log2.debug("[config infomation] Search-no-separator : " + Config.getNo_separator());
-            	Log2.debug("[config infomation] Search-goods-split-regx<else> : " + Config.getGoods_split_regxs().get("else"));
+            	Log2.debug("[config infomation] Search-goods-split-regx : " + Config.getGoods_split_regxs());
             	
             	Log2.debug("[config infomation] Update-output-key-column : " + Config.getUpdate_output_key_number());
             	Log2.debug("[config infomation] Update-order-key-column : " + Config.getUpdate_order_key_number());

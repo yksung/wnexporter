@@ -6,6 +6,7 @@ import kr.co.wisenut.common.logger.Log2;
 
 import org.jdom.Element;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -616,49 +617,63 @@ public class GetExtConfig extends XmlUtil {
 	   * @return String
 	   * @throws ConfigException
 	   */
-	  public String getIndexField() throws ConfigException {
-	      String tmp ;
+	  public ArrayList<SF1Collection> getSearchCollections() throws ConfigException {
+		  ArrayList<SF1Collection> collectionList = new ArrayList<SF1Collection>();
 	
 	      List lst = this.getChildrenElementList(this.getRootElement(), "Search");
 	      Element elmnt;
 	      
 	      try {
 	          elmnt = this.getElementListChild(lst, "Search");
-	          tmp = elmnt.getChildText("index-field");
-	          if(tmp == null || "".equals(tmp)){
-	        	  Log2.error("[Missing <Search> - <index-field> setting in configuration file.]");
-		          throw new ConfigException("Could not parse Directory Config.");
+	          Element collectionsNode = elmnt.getChild("collections");
+	          List collections = collectionsNode.getChildren("collection"); 
+	          for(Object collection : collections){
+	        	  SF1Collection col = new SF1Collection();
+	        	  
+	        	  String collectionName = ((Element)collection).getAttributeValue("name");
+	        	  if(collectionName == null || "".equals(collectionName)){
+	        		  Log2.error("[Missing <Search> - <collections> - <collection name> setting in configuration file.]");
+	        		  throw new ConfigException("Could not parse Config.");
+	        	  }
+	        	  
+	        	  String searchFields = ((Element)collection).getChildText("index-field");
+	        	  if(collectionName == null || "".equals(collectionName)){
+	        		  Log2.error("[Missing <Search> - <collections> - <collection> - <index-field> setting in configuration file.]");
+	        		  throw new ConfigException("Could not parse Config.");
+	        	  }
+
+	        	  HashMap<String,String> docFieldMap = new HashMap<String, String>();
+	        	  Element documentFields = ((Element)collection).getChild("document-fields");
+	        	  if(documentFields == null){
+	        		  Log2.error("[Missing <Search> - <collections> - <collection> - <document-fields> setting in configuration file.]");
+	        		  throw new ConfigException("Could not parse Config.");
+	        	  }else{
+	        		  List fields = this.getChildrenElementList(documentFields, "field");
+	        		  if(fields == null){
+		        		  Log2.error("[Missing <Search> - <collections> - <collection> - <document-fields> - <field> setting in configuration file.]");
+		        		  throw new ConfigException("Could not parse Config.");
+		        	  }
+        		  
+	        		  for(Object dfield : fields){
+
+	        			  String dfieldKind = ((Element)dfield).getAttributeValue("name");
+	        			  String dfieldName = ((Element)dfield).getText();
+	        			  
+	        			  docFieldMap.put(dfieldKind, dfieldName);
+	        		  }
+	        	  }
+	        	  
+	        	  col.setCollectionName(collectionName);
+	        	  col.setDocumentFieldsMap(docFieldMap);
+	        	  col.setSearchFields(searchFields);
+	        	  
+	        	  collectionList.add(col);
 	          }
 	      } catch (ConfigException e) {
-	          Log2.error("[Missing <Search> - <index-field> setting in configuration file.]");
+	          Log2.error("[Missing <Search> - <collections> setting in configuration file.]");
 	          throw new ConfigException("Could not parse Directory Config.");
 	      }
-	      return tmp;
-	  }
-	  
-	  /**
-	   *
-	   * @return String
-	   * @throws ConfigException
-	   */
-	  public String getClassField() throws ConfigException {
-	      String tmp ;
-	
-	      List lst = this.getChildrenElementList(this.getRootElement(), "Search");
-	      Element elmnt;
-	      
-	      try {
-	          elmnt = this.getElementListChild(lst, "Search");
-	          tmp = elmnt.getChildText("class-field");
-	          if(tmp == null || "".equals(tmp)){
-	        	  Log2.error("[Missing <Search> - <class-field> setting in configuration file.]");
-		          throw new ConfigException("Could not parse Directory Config.");
-	          }
-	      } catch (ConfigException e) {
-	          Log2.error("[Missing <Search> - <class-field> setting in configuration file.]");
-	          throw new ConfigException("Could not parse Directory Config.");
-	      }
-	      return tmp;
+	      return collectionList;
 	  }
 	  
 	  /**
@@ -1134,7 +1149,69 @@ public class GetExtConfig extends XmlUtil {
 	   * @return String
 	   * @throws ConfigException
 	   */
-	  public HashMap<String, String> getGoodsSplitRegx() throws ConfigException {
+	  public String getGoodsSplitRegx() throws ConfigException {
+	      String tmp = "";
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Search");
+	      Element elmnt;
+	      
+	      try {
+	          elmnt = this.getElementListChild(lst, "Search");
+	          Element regx = elmnt.getChild("goods-split-regx");
+	          if(regx == null){
+	        	  Log2.error("[Missing <Search> - <goods-split-regx> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	          Element sql = regx.getChild("sql");
+	          if(sql == null){
+	        	  Log2.error("[Missing <Search> - <goods-split-regx> - <sql> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	          tmp = sql.getText();
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Search> - <goods-split-regx> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getDefaultSplitter() throws ConfigException {
+	      String tmp = "";
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Search");
+	      Element elmnt;
+	      
+	      try {
+	          elmnt = this.getElementListChild(lst, "Search");
+	          Element regx = elmnt.getChild("goods-split-regx");
+	          if(regx == null){
+	        	  Log2.error("[Missing <Search> - <goods-split-regx> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	          Element defaultSplitter = regx.getChild("default-splitter");
+	          if(defaultSplitter == null){
+	        	  Log2.error("[Missing <Search> - <goods-split-regx> - <default-splitter> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	          tmp = defaultSplitter.getText();
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Search> - <goods-split-regx> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getExcludedWord() throws ConfigException {
 	      String tmp ;
 	
 	      List lst = this.getChildrenElementList(this.getRootElement(), "Search");
@@ -1142,32 +1219,16 @@ public class GetExtConfig extends XmlUtil {
 	      
 	      try {
 	          elmnt = this.getElementListChild(lst, "Search");
-	          List<Element> eles = elmnt.getChild("goods-split-regx").getChildren();
-	          HashMap<String, String> rets = new HashMap<String, String>();
-	          for(Element e : eles){
-	        	  String nodeName = e.getName();
-	        	  String key = "";
-	        	  String regx = "";
-	        	  if(nodeName.equals("case")){
-	        		  key = e.getAttributeValue("code");
-	        		  regx = e.getText();
-	        	  }else{
-	        		  key = "else";
-	        		  regx = e.getText().trim();
-	        	  }
-	        	  rets.put(key, regx);
+	          tmp = elmnt.getChildText("excluded-word");
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Search> - <excluded-word> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
 	          }
-	          
-//	          if(tmp == null || "".equals(tmp)){
-//	        	  Log2.error("[Missing <Update> - <query> setting in configuration file.]");
-//		          throw new ConfigException("Could not parse Directory Config.");
-//	          }
-	          
-	          return rets;
 	      } catch (ConfigException e) {
-	          Log2.error("[Missing <Update> - <query> setting in configuration file.]");
+	          Log2.error("[Missing <Search> - <excluded-word> setting in configuration file.]");
 	          throw new ConfigException("Could not parse Directory Config.");
 	      }
+	      return tmp;
 	  }
 	  
 	  public static void main(String[] args){
