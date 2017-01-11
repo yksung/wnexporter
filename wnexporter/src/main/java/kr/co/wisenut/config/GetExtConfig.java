@@ -1099,6 +1099,31 @@ public class GetExtConfig extends XmlUtil {
 	  }
 	  
 	  /**
+	   *
+	   * @return String
+	   * @throws ConfigException
+	   */
+	  public String getUpdateCompletionAlertName() throws ConfigException {
+	      String tmp ;
+	
+	      List lst = this.getChildrenElementList(this.getRootElement(), "Update");
+	      Element elmnt;
+	      
+	      try {
+	          elmnt = this.getElementListChild(lst, "Update");
+	          tmp = elmnt.getChild("query").getAttributeValue("completion_alert");
+	          if(tmp == null || "".equals(tmp)){
+	        	  Log2.error("[Missing <Update> - <query completion_alert> setting in configuration file.]");
+		          throw new ConfigException("Could not parse Directory Config.");
+	          }
+	      } catch (ConfigException e) {
+	          Log2.error("[Missing <Update> - <query> setting in configuration file.]");
+	          throw new ConfigException("Could not parse Directory Config.");
+	      }
+	      return tmp;
+	  }
+	  
+	  /**
 	  *
 	  * @return String
 	  * @throws ConfigException

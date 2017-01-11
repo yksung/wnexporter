@@ -115,7 +115,6 @@ public class MakeInsertQuery extends RunSQL{
 				
 				Log2.out("[info][MakeInsertQuery] Start writing " + fileWriting);
 				
-				long stopWatchStart;
 				String line;
 
 				

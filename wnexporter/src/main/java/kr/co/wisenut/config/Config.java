@@ -53,6 +53,7 @@ public class Config {
     private static String update_hscode_seq_number;
     private static String update_hscode_val_number;
     private static String update_query;
+    private static String update_completion_alert_name;
     
     private static HashMap dataSource;
     
@@ -342,5 +343,12 @@ public class Config {
 	}
 	public static void setExcluded_word(String excluded_word) {
 		Config.excluded_word = excluded_word;
+	}
+	public static String getUpdate_completion_alert_name() {
+		return update_completion_alert_name;
+	}
+	public static void setUpdate_completion_alert_name(
+			String update_completion_alert_name) {
+		Config.update_completion_alert_name = update_completion_alert_name;
 	}
 }

@@ -141,10 +141,19 @@ public class InsertFileToDB extends RunSQL{
 				}
 				
 				// 남은 row를 update.
-				if( m_dbjob.executeBatch(Config.getUpdate_query(), parameters) == 0){
-					Log2.error("[InsertFileToDb] executeBatch failed.");
-				}else{					
-					if(RunTimeArgs.isDebug()) Log2.debug("[InsertFileToDb] " + updateCount +" rows are updated.");
+				if(parameters.size()>0){
+					if( m_dbjob.executeBatch(Config.getUpdate_query(), parameters) == 0){
+						Log2.error("[InsertFileToDb] executeBatch failed.");
+					}else{					
+						if(RunTimeArgs.isDebug()) Log2.debug("[InsertFileToDb] " + updateCount +" rows are updated.");
+						// export 완료를 알리는 프로시저 호출.
+						int ret = m_dbjob.executeQuery("{call "+Config.getUpdate_completion_alert_name()+"('"+RunTimeArgs.getExportid()+"')}");
+						if(ret==1){
+							Log2.out("[info] [InsertFileToDb] Completion alert succeded.");
+						}else{
+							Log2.out("[info] [InsertFileToDb] Completion alert failed.");
+						}
+					}
 				}
 	
 				reader.close();

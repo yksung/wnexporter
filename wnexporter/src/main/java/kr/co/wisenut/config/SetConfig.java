@@ -57,6 +57,7 @@ public class SetConfig {
         Config.setUpdate_hscode_seq_number(ext.getUpdateHscodeSeqColumn());
         Config.setUpdate_hscode_val_number(ext.getUpdateHscodeValColumn());
         Config.setUpdate_query(ext.getUpdateQuery());
+        Config.setUpdate_completion_alert_name(ext.getUpdateCompletionAlertName());
         
         Config.setPage_count(StringUtil.parseInt(ext.getPageCount(), 0));
         Config.setRecom_count(StringUtil.parseInt(ext.getRecomCount(), 0));

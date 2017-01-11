@@ -67,8 +67,6 @@ public class SearchWorker {
 	}
 	
 	public String getRecommends(String[] inputData, String query){
-		long stopWatchStart;
-		
 		boolean status = true;
 		int ret = 0;
 		
